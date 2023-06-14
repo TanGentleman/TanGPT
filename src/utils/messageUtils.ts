@@ -65,10 +65,12 @@ export const limitMessageTokens = (
 
   // Iterate through messages in reverse order, adding them to the limitedMessages array
   // until the token limit is reached (excludes first message)
+  // BELOW CONSTANT MODIFIED BY TAN - Adjusting limit to 16k so it doesn't ignore long prompt on new model.
+  const updated_limit: number = model === 'gpt-3.5-turbo-16k' ? 16000 : 4096;
   for (let i = messages.length - 1; i >= 1; i--) {
     const count = countTokens([messages[i]], model);
-    // BELOW LINE MODIFIED BY TAN - Adjusting limit to 16k so it doesn't ignore long prompt on new model.
-    const updated_limit: number = model === 'gpt-3.5-turbo-16k' ? 16000 : 4096;
+    
+   
     if (count + tokenCount > updated_limit) break;
     tokenCount += count;
     limitedMessages.unshift({ ...messages[i] });
@@ -76,12 +78,12 @@ export const limitMessageTokens = (
 
   // Process first message
   if (retainSystemMessage) {
-    // Insert the system message in the third position from the end
-    limitedMessages.splice(-3, 0, { ...messages[0] });
+    // Insert the system message in the first position - adjusted
+    limitedMessages.unshift({ ...messages[0] });
   } else if (!isSystemFirstMessage) {
     // Check if the first message (non-system) can fit within the limit
     const firstMessageTokenCount = countTokens([messages[0]], model);
-    if (firstMessageTokenCount + tokenCount < limit) {
+    if (firstMessageTokenCount + tokenCount < updated_limit) {
       limitedMessages.unshift({ ...messages[0] });
     }
   }

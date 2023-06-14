@@ -32,7 +32,7 @@ const AboutMenu = () => {
                 Source code for this project: <br />
                 <a href='https://github.com/TanGentleman/TanGPT' target='_blank'>https://github.com/TanGentleman/TanGPT</a>
               </p>
-              <h2 className='text-lg font-bold'>Please do not abuse this site, it is made for fun.</h2>
+              <h2 className='text-lg font-bold'>Please do not abuse the personal endpoint I host and provide for free.</h2>
             </div>
           </div>
         </PopupModal>

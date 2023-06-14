@@ -69,7 +69,7 @@ const createTray = (window) => {
     win.maximize();
     window.show();
   });
-  tray.setToolTip('Better ChatGPT');
+  tray.setToolTip('TanGPT');
   tray.setContextMenu(contextMenu);
 
   return tray;
