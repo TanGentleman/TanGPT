@@ -21,7 +21,7 @@ export const getChatGPTEncoding = (
   messages: MessageInterface[],
   model: ModelOptions
 ) => {
-  const isGpt3 = model === 'gpt-3.5-turbo';
+  const isGpt3 = model === 'gpt-3.5-turbo' || model === 'gpt-3.5-turbo-16k';
 
   const msgSep = isGpt3 ? '\n' : '';
   const roleSep = isGpt3 ? '\n' : '<|im_sep|>';
@@ -67,7 +67,9 @@ export const limitMessageTokens = (
   // until the token limit is reached (excludes first message)
   for (let i = messages.length - 1; i >= 1; i--) {
     const count = countTokens([messages[i]], model);
-    if (count + tokenCount > limit) break;
+    // BELOW LINE MODIFIED BY TAN - Adjusting limit to 16k so it doesn't ignore long prompt on new model.
+    const updated_limit: number = model === 'gpt-3.5-turbo-16k' ? 16000 : 4096;
+    if (count + tokenCount > updated_limit) break;
     tokenCount += count;
     limitedMessages.unshift({ ...messages[i] });
   }
