@@ -39,7 +39,6 @@ export const getChatCompletion = async (
     body: JSON.stringify({
       messages,
       ...config,
-      max_tokens: undefined,
     }),
   });
   if (!response.ok) throw new Error(await response.text());
@@ -85,7 +84,6 @@ export const getChatCompletionStream = async (
     body: JSON.stringify({
       messages,
       ...config,
-      max_tokens: undefined,
       stream: true,
     }),
   });
