@@ -1,13 +1,17 @@
 # TanGPT
 
-Built around privacy. Fully open-source. Supports new larger 16K context for gpt-3.5, and 32k for those with gpt-4 access.
-Maintained by Tan.
-Steps to run on MacOs:
+* Built around privacy.
+* Fully open-source.
+* Supports new larger 16K context for gpt-3.5, and 32k for those with gpt-4 access.
+* Maintained by Tan.
+
+### My preferred way to run [MacOS]:
 1. Clone this repository.
-2. cd into the repo named TanGPT
+2. cd into the repo named TanGPT (i.e. `cd Downloads/TanGPT`)
 3. `yarn`
-4. `yarn run build`
-5. `yarn run dev` for WebUI, accessing via browser at localhost:$PORT as the url, substituting $PORT from the output.
-5. `yarn run electron` for an Electron app instance
-6. Include your api key when using the official OpenAI endpoint, it is locally stored as an environment variable.
-Please do not abuse the personal endpoint I host and provide as a proxy for testing.
+4. `yarn build`
+5. `yarn dev` for Web UI, accessing via browser at localhost:$PORT as the url, substituting $PORT from the output you'll get.
+5. `yarn electron` for an Electron app instance instead (my go-to)
+6. If using the official OpenAI endpoint, enter your api key from the API at the bottom left, it is stored locally and privately.
+
+# Please do not abuse the personal endpoint I host and provide as a proxy for testing.
