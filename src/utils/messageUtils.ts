@@ -1,4 +1,4 @@
-import { MessageInterface, ModelOptions, TotalTokenUsed } from '@type/chat';
+import { MessageInterface, ModelOptions, TotalTokenUsed, LimitedMessagesResult } from '@type/chat';
 
 import useStore from '@store/store';
 
@@ -46,27 +46,36 @@ const countTokens = (messages: MessageInterface[], model: ModelOptions) => {
 // function to decide what max token limit should be
 export const getMaxTokenLimit = (model: ModelOptions) => {
   switch (model) {
-    case 'gpt-3.5-turbo' || 'gpt-3.5-turbo-0613':
+    case 'gpt-3.5-turbo':
       return 4096;
-    case 'gpt-3.5-turbo-16k' || 'gpt-3.5-turbo-16k-0613':
+    case 'gpt-3.5-turbo-0613':
+      return 4096;
+    case 'gpt-3.5-turbo-16k':
       return 16384;
-    case 'gpt-4' || 'gpt-4-0613':
+    case 'gpt-3.5-turbo-16k-0613':
+      return 16384;
+    case 'gpt-4':
       return 8192;
-    case 'gpt-4-32k' || 'gpt-4-32k-0613':
+    case 'gpt-4-0613':
+      return 8192;
+    case 'gpt-4-32k':
+      return 32768;
+    case 'gpt-4-32k-0613':
       return 32768;
     default:
-      return 4096;
+      // console.log('Diff model: ', model)
+      return 4095;
   }
 };
 // improved for safety and new models
 export const limitMessageTokensBetter = (
   messages: MessageInterface[],
   model: ModelOptions
-): MessageInterface[] => {
+): LimitedMessagesResult => {
   const limitedMessages: MessageInterface[] = [];
   // Ensure messages is nonzero in length
-  if (messages.length === 0) return limitedMessages;
   let tokenCount = 0;
+  if (messages.length === 0) return { limitedMessages, leftOverTokens: tokenCount };
   const maxTokenLimit = getMaxTokenLimit(model);
   let retainSystemMessage = false;
   let allowFirstMessage = false;
@@ -80,9 +89,10 @@ export const limitMessageTokensBetter = (
     allowFirstMessage = true;
   }
   else {
+    // console.log('error!', maxTokenLimit, model, getMaxTokenLimit(model));
     // throw error?
     // for now, im returning the empty list
-    return limitedMessages;
+    return { limitedMessages, leftOverTokens: tokenCount };
   }
   const isSystemFirstMessage = messages[0]?.role === 'system';
   // Check if the first message is a system message and if it fits within the token limit
@@ -117,10 +127,8 @@ export const limitMessageTokensBetter = (
   // add first message
   limitedMessages.push({ ...messages[length-1] });
   // assert tokenCount < maxTokenLimit
-  return limitedMessages;
+  return { limitedMessages, leftOverTokens: maxTokenLimit - tokenCount };
 };
-
-
 
 
 export const updateTotalTokenUsed = (

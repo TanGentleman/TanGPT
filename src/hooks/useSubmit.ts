@@ -77,10 +77,12 @@ const useSubmit = () => {
       //   chats[currentChatIndex].config.max_tokens,
       //   chats[currentChatIndex].config.model
       // );
-      const messages = limitMessageTokensBetter(
+      const result = limitMessageTokensBetter(
         chats[currentChatIndex].messages,
         chats[currentChatIndex].config.model
       );
+      const messages = result.limitedMessages;
+      const leftOverTokens = result.leftOverTokens;
       if (messages.length === 0) throw new Error('Message exceeds max tokens!');
 
       // no api key (free)
@@ -94,7 +96,8 @@ const useSubmit = () => {
         stream = await getChatCompletionStream(
           useStore.getState().apiEndpoint,
           messages,
-          chats[currentChatIndex].config
+          chats[currentChatIndex].config,
+          leftOverTokens
         );
       } else if (apiKey) {
         // own apikey
@@ -102,6 +105,7 @@ const useSubmit = () => {
           useStore.getState().apiEndpoint,
           messages,
           chats[currentChatIndex].config,
+          leftOverTokens,
           apiKey
         );
       }

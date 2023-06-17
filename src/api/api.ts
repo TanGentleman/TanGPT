@@ -51,6 +51,7 @@ export const getChatCompletionStream = async (
   endpoint: string,
   messages: MessageInterface[],
   config: ConfigInterface,
+  leftOverTokens: number,
   apiKey?: string,
   customHeaders?: Record<string, string>
 ) => {
@@ -85,6 +86,7 @@ export const getChatCompletionStream = async (
       messages,
       ...config,
       stream: true,
+      max_tokens: Math.min(config.max_tokens, leftOverTokens),
     }),
   });
   if (response.status === 404 || response.status === 405) {

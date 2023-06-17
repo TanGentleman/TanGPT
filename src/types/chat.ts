@@ -27,6 +27,11 @@ export interface ConfigInterface {
   frequency_penalty: number;
 }
 
+export interface LimitedMessagesResult {
+  limitedMessages: MessageInterface[];
+  leftOverTokens: number;
+}
+
 export interface ChatHistoryInterface {
   title: string;
   index: number;
