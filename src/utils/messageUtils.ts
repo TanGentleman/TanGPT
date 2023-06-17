@@ -109,7 +109,7 @@ export const limitMessageTokensBetter = (
   // assert allowFirstMessage = true
   for (let i = messages.length - 2; i >= 0; i--) {
     // assert(i is never less than 0, so messages access is safe) 
-    if (i = 0 && isSystemFirstMessage) continue;
+    if (i === 0 && isSystemFirstMessage) continue;
     
     // assert tokenCount < maxTokenLimit
     const count = countTokens([messages[i]], model);
@@ -127,6 +127,7 @@ export const limitMessageTokensBetter = (
   // add first message
   limitedMessages.push({ ...messages[length-1] });
   // assert tokenCount < maxTokenLimit
+  // console.log('limitedMessages:', limitedMessages)
   return { limitedMessages, leftOverTokens: maxTokenLimit - tokenCount };
 };
 

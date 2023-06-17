@@ -16,6 +16,7 @@ i18n
   //.use(LanguageDetector)
   .init({
     lng: 'en',
+    fallbackLng: 'en',
     backend: {
       loadPath: 'locales/{{lng}}/{{ns}}.json',
     },

@@ -27,4 +27,3 @@ jobs:
         run: yarn make
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VITE_GOOGLE_CLIENT_ID: ${{ secrets.GCLIENT }}
