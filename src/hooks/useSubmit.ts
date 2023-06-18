@@ -6,7 +6,7 @@ import { getChatCompletion, getChatCompletionStream } from '@api/api';
 import { parseEventSource } from '@api/helper';
 // import { limitMessageTokens } from '@utils/messageUtils';
 import { limitMessageTokensBetter, updateTotalTokenUsed } from '@utils/messageUtils';
-import { _defaultChatConfig } from '@constants/chat';
+import { _defaultChatConfig, _titleChatConfig } from '@constants/chat';
 import { officialAPIEndpoint } from '@constants/auth';
 
 const useSubmit = () => {
@@ -35,14 +35,14 @@ const useSubmit = () => {
         data = await getChatCompletion(
           useStore.getState().apiEndpoint,
           message,
-          _defaultChatConfig
+          _titleChatConfig,
         );
       } else if (apiKey) {
         // own apikey
         data = await getChatCompletion(
           useStore.getState().apiEndpoint,
           message,
-          _defaultChatConfig,
+          _titleChatConfig,
           apiKey
         );
       }
@@ -168,25 +168,39 @@ const useSubmit = () => {
           messages[messages.length - 1]
         );
       }
-
+      
       // generate title for new chats
       if (
+        // if autoTitle is enabled and title is not set
         useStore.getState().autoTitle &&
         currChats &&
-        !currChats[currentChatIndex]?.titleSet
+        currChats[currentChatIndex]?.titleSet === false
       ) {
+        // Define a maximum length for messages
+        const MAX_MESSAGE_LENGTH = 2000; // Change this to the value you want
+        // Truncate the messages if they are too long
+        
         const messages_length = currChats[currentChatIndex].messages.length;
-        const assistant_message =
+        // assert messages_length >= 2
+        const assistant_message_full =
           currChats[currentChatIndex].messages[messages_length - 1].content;
-        const user_message =
+        const user_message_full =
           currChats[currentChatIndex].messages[messages_length - 2].content;
+        const assistant_message_trimmed = assistant_message_full.length > MAX_MESSAGE_LENGTH ?
+        assistant_message_full.substring(0, MAX_MESSAGE_LENGTH) + '...' :
+        assistant_message_full;
+
+        const user_message_trimmed = user_message_full.length > MAX_MESSAGE_LENGTH ?
+        user_message_full.substring(0, MAX_MESSAGE_LENGTH) + '[...truncated]' :
+        user_message_full;
 
         const message: MessageInterface = {
           role: 'user',
-          content: `Generate a title in less than 6 words for the following message (language: ${i18n.language}):\n"""\nUser: ${user_message}\nAssistant: ${assistant_message}\n"""`,
+          content: `Generate a title in less than 6 words for the following message:\n"""\nUser: ${user_message_trimmed}\nAssistant: ${assistant_message_trimmed}\n"""`,
         };
 
         let title = (await generateTitle([message])).trim();
+        // Remove quotes from title if present
         if (title.startsWith('"') && title.endsWith('"')) {
           title = title.slice(1, -1);
         }

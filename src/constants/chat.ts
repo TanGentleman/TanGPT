@@ -87,6 +87,16 @@ export const _defaultChatConfig: ConfigInterface = {
   frequency_penalty: 0,
 };
 
+// This is for title generation
+export const _titleChatConfig: ConfigInterface = {
+  model: 'gpt-3.5-turbo',
+  max_tokens: 20,
+  temperature: 0.7,
+  presence_penalty: 0,
+  top_p: 1,
+  frequency_penalty: 0,
+};
+
 export const generateDefaultChat = (
   title?: string,
   folder?: string
