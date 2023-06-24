@@ -1,8 +1,8 @@
 const path = require('path');
-
-const {dialog,  app, BrowserWindow, Tray, Menu } = require('electron');
+const { dialog, app, BrowserWindow, Tray, Menu, MenuItem } = require('electron');
 const isDev = require('electron-is-dev');
 const { autoUpdater } = require('electron-updater');
+
 let win = null;
 const instanceLock = app.requestSingleInstanceLock();
 
@@ -20,9 +20,12 @@ function createWindow() {
   autoUpdater.checkForUpdatesAndNotify();
 
   win = new BrowserWindow({
-	autoHideMenuBar: true,
+    autoHideMenuBar: true,
     show: false,
     icon: iconPath,
+    webPreferences: {
+      spellcheck: true
+    }
   });
 
   createTray(win);
@@ -37,6 +40,47 @@ function createWindow() {
   if (isDev) {
     win.webContents.openDevTools({ mode: 'detach' });
   }
+
+  win.webContents.on('context-menu', (e, params) => {
+    const menu = new Menu();
+
+    // Add right-click context menu items
+    menu.append(new MenuItem({
+      label: 'Inspect element',
+      click: () => win.inspectElement(params.x, params.y)
+    }));
+    menu.append(new MenuItem({ type: 'separator' }));
+    menu.append(new MenuItem({ role: 'undo' }));
+    menu.append(new MenuItem({ role: 'redo' }));
+    menu.append(new MenuItem({ type: 'separator' }));
+    menu.append(new MenuItem({ role: 'cut' }));
+    menu.append(new MenuItem({ role: 'copy' }));
+    menu.append(new MenuItem({ role: 'paste' }));
+    menu.append(new MenuItem({ role: 'pasteAndMatchStyle' }));
+    menu.append(new MenuItem({ role: 'delete' }));
+    menu.append(new MenuItem({ role: 'selectAll' }));
+    menu.append(new MenuItem({ type: 'separator' }));
+
+    // Add each spelling suggestion
+    for (const suggestion of params.dictionarySuggestions) {
+      menu.append(new MenuItem({
+        label: suggestion,
+        click: () => win.webContents.replaceMisspelling(suggestion)
+      }));
+    }
+
+    // Allow users to add the misspelled word to the dictionary
+    if (params.misspelledWord) {
+      menu.append(
+        new MenuItem({
+          label: 'Add to dictionary',
+          click: () => win.webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord)
+        })
+      );
+    }
+
+    menu.popup();
+  });
 
   return win;
 }
